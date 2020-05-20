@@ -1,3 +1,8 @@
+#include <OLEDDisplayUi.h>
+#include <OLEDDisplay.h>
+#include <SH1106Brzo.h>
+#include <SH1106.h>
+
 #include <RF24.h>
 #include <RF24_config.h>
 #include <printf.h>
@@ -8,7 +13,6 @@
 #include <FS.h>
 #include <TinyXML.h>
 #include <Adafruit_NeoPixel.h>
-#include <LiquidCrystal_I2C.h>
 
 #define SW_NAME String("CachingBuddy")
 #define VERSION String("0.1")
@@ -63,9 +67,6 @@ SoftwareSerial ss(RXPin, TXPin);
 Adafruit_NeoPixel compass(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 uint8_t activeLed = 0;
 
-// Display
-LiquidCrystal_I2C lcd(0x27,20,4);
-
 // The current Cache
 String path = "/GC7W1NN.gpx";
 geocache_t cache;
@@ -77,8 +78,8 @@ void setup()
   SPIFFS.begin();
   xml.init((uint8_t *)xmlBuffer, sizeof(xmlBuffer), &XML_callback);
 
-  initLCD();
   initCompass();
+  initLCD();
   initButtons();
   
   loadGpxFile();

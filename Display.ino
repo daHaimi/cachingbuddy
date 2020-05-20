@@ -1,91 +1,59 @@
 /********
  * OLED LIB: https://github.com/rene-mt/esp8266-oled-sh1106/
  ********/
-/*
-#define OLED_SDA    D2
-#define OLED_SDC    D4
+
 #define OLED_ADDR   0x3C
 
-#include <font8x16.h>
-#include <ssd1306xled.h>
-#include <font6x8.h>
+SH1106Brzo lcd(OLED_ADDR, SDA, SCL);
 
-SH1106 lcd(OLED_ADDR, OLED_SDA, OLED_SDC);
-*/
-
-#define CHAR_SAT 0
-#define CHAR_DOTS 1
-#define CHAR_LOC 2
-#define CHAR_DEG 3
-
-byte satelite[8] = {
-  B00000,
-  B11000,
-  B11010,
-  B11110,
-  B01110,
-  B01111,
-  B01011,
-  B00011
+const char satelite[] PROGMEM = {
+  B00000000,
+  B11100000,
+  B11100100,
+  B01111000,
+  B00111000,
+  B00111100,
+  B01001110,
+  B00001110
 };
 
-byte dots[] = {
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B10101,
-  B00000
-};
-
-byte loc[] = {
-  B01110,
-  B11111,
-  B11011,
-  B11111,
-  B01110,
-  B01110,
-  B00100,
-  B00100
-};
-
-byte degree[] = {
-  B01000,
-  B10100,
-  B01000,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000
+const char loc[] PROGMEM = {
+  B0011100,
+  B0111110,
+  B0110110,
+  B0111110,
+  B0011100,
+  B0011100,
+  B0001000,
+  B0001000
 };
 
 void initLCD() {
   lcd.init();
-  lcd.clear();
-  lcd.backlight();
+  lcd.flipScreenVertically();
+  
+  drawStartup();
+}
 
-  // Symbols
-  lcd.createChar(CHAR_SAT, satelite);
-  lcd.createChar(CHAR_DOTS, dots);
-  lcd.createChar(CHAR_LOC, loc);
-  lcd.createChar(CHAR_DEG, degree);
-  
-  lcd.setCursor(1,0);
-  lcd.print(SW_NAME + " v" + VERSION);
-  
-  lcd.setCursor(12,2);
-  lcd.print("By Haimi");
-  
-  lcd.setCursor(0, 3);
-  lcd.print("Lade Caches...");
+bool drawStartup() {
+  lcd.setFont(ArialMT_Plain_24);
+  lcd.drawString(10, 5, "Caching");
+  lcd.drawString(28, 22, "Buddy");
+
+  lcd.setFont(ArialMT_Plain_10);
+  lcd.setTextAlignment(TEXT_ALIGN_LEFT);
+  lcd.drawString(0, 50, "v" + VERSION);
+  lcd.setTextAlignment(TEXT_ALIGN_RIGHT);
+  lcd.drawString(0, 50, "by Haimi");
+
+  lcd.display();
+  return false;
 }
 
 
 void lcdSetCacheInfo() {
-  clearLine(0);
+
+/*
   lcd.setCursor(13,0);
   lcd.print(cache.geocode);
   lcd.setCursor(0,0);
@@ -95,6 +63,7 @@ void lcdSetCacheInfo() {
   } else {
     lcd.print(cache.name);
   }
+  */
 }
 
 String humanDistance(unsigned long distance) {
@@ -121,8 +90,9 @@ String humanCourse(uint16_t course) {
 }
 
 void lcdUpdateStatus(unsigned long distance, double course) {
+  /*
   clearLine(1);
-  lcd.setCursor(0, 1);
+  lcd.setCursor(0, 1);m
   lcd.write(CHAR_LOC);
   if (gps.location.isValid()) {
     lcd.print(" " + humanDistance(distance));
@@ -140,9 +110,5 @@ void lcdUpdateStatus(unsigned long distance, double course) {
   clearLine(3);
   lcd.setCursor(0, 3);
   lcd.printf(line);
-}
-
-void clearLine(uint8_t line) {
-  lcd.setCursor(0, line);
-  lcd.printf("                    ");
+  */
 }
