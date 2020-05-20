@@ -79,6 +79,8 @@ void setup()
 
   initLCD();
   initCompass();
+  initButtons();
+  
   loadGpxFile();
 
   if (SERIAL) Serial.println(SW_NAME);
@@ -174,7 +176,6 @@ void loop()
   printStatus();
   
   smartDelay(2000);
-
   if (SERIAL && millis() > 5000 && gps.charsProcessed() < 10)Serial.println(F("No GPS data received: check wiring"));
 }
 
