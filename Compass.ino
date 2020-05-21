@@ -49,8 +49,12 @@ void updateCompass(double course, double distancePercentage, bool valid) {
   compass.setPixelColor(activeLed, getColor(distancePercentage));
   compass.show();
   if (!valid) {
-    smartDelay(100);
     compass.setPixelColor(activeLed, compass.Color(0, 0, 0));
     compass.show();
   }
+}
+
+void loopCompass() {
+  double distPercentage = (double)current_search.distance / MAX_DISTANCE;
+  updateCompass(current_search.course, distPercentage, gps.location.isValid());
 }
