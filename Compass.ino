@@ -46,7 +46,7 @@ uint32_t getColor(float distancePercentage) {
 void updateCompass(double course, double distancePercentage, bool valid) {
   compass.setPixelColor(activeLed, compass.Color(0, 0, 0));
   activeLed = floor(course / DEGREE_PER_LED);
-  compass.setPixelColor(activeLed, getColor(distancePercentage));
+  compass.setPixelColor(activeLed, getColor(1 - distancePercentage));
   compass.show();
   if (!valid) {
     compass.setPixelColor(activeLed, compass.Color(0, 0, 0));

@@ -26,7 +26,9 @@ void loopButtons() {
     ButtonsPressed &= ~0x2;
     Serial.println(ButtonsPressed);
     uint8_t curFrame = ui.getUiState()->currentFrame;
-    if (curFrame == FRAME_CACHES) {
+    if (curFrame == FRAME_MAIN) {
+      nextWaypoint();
+    } else if (curFrame == FRAME_CACHES) {
       nextCache();
     } else if (curFrame == FRAME_WIFI) {
       toggleWifi();

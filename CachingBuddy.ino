@@ -1,7 +1,4 @@
-#include <RF24.h>
-#include <RF24_config.h>
 #include <printf.h>
-#include <nRF24L01.h>
 #include <OLEDDisplayUi.h>
 #include <SH1106Brzo.h>
 
@@ -29,6 +26,7 @@
 #define MAX_DISTANCE 50.0
 #define STEP_NUM 3
 #define MAX_CACHES 255
+#define MAX_WAPOINTS 32
 
 typedef enum {
   Micro,
@@ -46,14 +44,18 @@ container_t stringToContainer(String s) {
   return Other;
 }
 
+typedef struct wpt_t {
+  double lat;
+  double lon;
+  String name;
+} wpt_t;
+
 typedef struct geocache_t {
   String geocode;
-  String name;
   container_t size;
   float difficulty;
   float terrain;
-  double lat;
-  double lon;
+  wpt_t wpts[MAX_WAPOINTS];
 } geocache_t;
 
 struct search_t {
@@ -88,6 +90,8 @@ uint8_t numCaches;
 
 // The current Cache
 uint8_t curCacheIdx = 0;
+uint8_t curWptIdx = 0;
+uint8_t numWpts = 0;
 geocache_t cache;
 search_t current_search;
 
@@ -127,11 +131,17 @@ void listCaches() {
 }
 
 void nextCache() {
+  curWptIdx = 0;
   curCacheIdx = (curCacheIdx + 1) % numCaches;
   loadGpxFile();
 }
 
+void nextWaypoint() {
+  curWptIdx = (curWptIdx + 1) % numWpts;
+}
+
 void loadGpxFile() {
+  numWpts = 0;
   if (!SPIFFS.exists(avlbCaches[curCacheIdx])) {
     if (SERIAL) Serial.println("File not found.");
     return;
@@ -144,7 +154,7 @@ void loadGpxFile() {
     xml.processChar(file.read());
   }
   char statbuf[100];
-  sprintf(statbuf, "Loaded Cache: %s (%s) D%1.1f/T%1.1f %d @N%f,E%f\n", cache.name.c_str(), cache.geocode.c_str(), cache.difficulty, cache.terrain, cache.size, cache.lon, cache.lat);
+  sprintf(statbuf, "Loaded Cache: %s (%s) D%1.1f/T%1.1f %d @N%f,E%f\n", cache.wpts[curWptIdx].name.c_str(), cache.geocode.c_str(), cache.difficulty, cache.terrain, cache.size, cache.wpts[curWptIdx].lon, cache.wpts[curWptIdx].lat);
   if (SERIAL) Serial.println(statbuf);
 }
 
@@ -169,8 +179,8 @@ double effectiveCourse() {
   double deg = TinyGPSPlus::courseTo(
     gps.location.lat(),
     gps.location.lng(),
-    cache.lat,
-    cache.lon) - (gps.course.isValid() ? gps.course.deg() : 0.0);
+    cache.wpts[curWptIdx].lat,
+    cache.wpts[curWptIdx].lon) - (gps.course.isValid() ? gps.course.deg() : 0.0);
   if (deg < 360.0) deg += 360.0;
   while (deg > 360.0) deg -= 360.0;
   return deg;
@@ -189,8 +199,8 @@ struct search_t getSearch() {
     (unsigned long)TinyGPSPlus::distanceBetween(
       gps.location.lat(),
       gps.location.lng(),
-      cache.lat,
-      cache.lon),
+      cache.wpts[curWptIdx].lat,
+      cache.wpts[curWptIdx].lon),
       effectiveCourse()
   };
 }

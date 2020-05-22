@@ -31,7 +31,7 @@ void drawCacheInfo(OLEDDisplay *display, OLEDDisplayUiState* state, short x, sho
   display->setTextAlignment(TEXT_ALIGN_LEFT);
 
   // Name
-  display->drawString(x + 0, y + 0, cache.name);
+  display->drawString(x + 0, y + 0, cache.wpts[curWptIdx].name);
   // Direction
   display->setTextAlignment(TEXT_ALIGN_LEFT);
   display->drawString(x + 0, y + 10, cache.geocode);
@@ -52,10 +52,14 @@ void drawCacheInfo(OLEDDisplay *display, OLEDDisplayUiState* state, short x, sho
   
     // Satellites + Location
     display->setFont(ArialMT_Plain_10);
-    sprintf(buf, "Qual: %s (%d Sat)", hdopToString(gps.hdop.isValid()).c_str(), gps.satellites.value());
+    sprintf(buf, "%d/%d | Q: %s (%d Sat)", curWptIdx + 1, numWpts, hdopToString(gps.hdop.isValid()).c_str(), gps.satellites.value());
     display->drawString(x + 64, y + 42, buf);
   } else {
     display->drawString(x + 64, y + 22, "Suche...");
+    // wpts
+    display->setFont(ArialMT_Plain_10);
+    sprintf(buf, "%d/%d", curWptIdx + 1, numWpts);
+    display->drawString(x + 64, y + 42, buf);
   }
   
 }
@@ -113,6 +117,7 @@ void initQRCode() {
 }
 
 void resetQRCode() {
+  free(qrcodeData);
   qrcodeData = NULL;
 }
 
