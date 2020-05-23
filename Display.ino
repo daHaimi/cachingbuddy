@@ -40,9 +40,9 @@ void drawCacheInfo(OLEDDisplay *display, OLEDDisplayUiState* state, short x, sho
   display->drawString(x + 64, y + 10, "S:");
   display->drawXbm(x + 64, y + 12, locW, locH, sizes[cache.size]);
   // Terrain/Difficulty
-  char buf[10];
+  char buf[64];
   sprintf(buf, "D%01.1f T%01.1f", cache.difficulty, cache.terrain);
-  display->drawString(128, y + 10, buf);
+  display->drawString(128 - x, y + 10, buf);
     
   display->setFont(ArialMT_Plain_16);
     display->setTextAlignment(TEXT_ALIGN_CENTER);
@@ -52,15 +52,17 @@ void drawCacheInfo(OLEDDisplay *display, OLEDDisplayUiState* state, short x, sho
   
     // Satellites + Location
     display->setFont(ArialMT_Plain_10);
-    sprintf(buf, "%d/%d | Q: %s (%d Sat)", curWptIdx + 1, numWpts, hdopToString(gps.hdop.isValid()).c_str(), gps.satellites.value());
-    display->drawString(x + 64, y + 42, buf);
+    display->setTextAlignment(TEXT_ALIGN_LEFT);
+    sprintf(buf, "Q: %s (%d Sat)", hdopToString(gps.hdop.isValid()).c_str(), gps.satellites.value());
+    display->drawString(x, y + 42, buf);
   } else {
     display->drawString(x + 64, y + 22, "Suche...");
-    // wpts
-    display->setFont(ArialMT_Plain_10);
-    sprintf(buf, "%d/%d", curWptIdx + 1, numWpts);
-    display->drawString(x + 64, y + 42, buf);
   }
+  // wpts
+  display->setFont(ArialMT_Plain_10);
+  display->setTextAlignment(TEXT_ALIGN_RIGHT);
+  sprintf(buf, "%d/%d", curWptIdx + 1, numWpts);
+  display->drawString(128 - x, y + 42, buf);
   
 }
 
@@ -72,7 +74,7 @@ void drawCacheList(OLEDDisplay *display, OLEDDisplayUiState* state, short x, sho
   char buf[8];
   sprintf(buf, "%d/%d", curCacheIdx + 1, numCaches);
   display->setTextAlignment(TEXT_ALIGN_RIGHT);
-  display->drawString(128, y + 0, buf);
+  display->drawString(128 - x, y + 0, buf);
 
   short ly = y + 11;
   display->setTextAlignment(TEXT_ALIGN_LEFT);
@@ -99,7 +101,7 @@ void drawSettings(OLEDDisplay *display, OLEDDisplayUiState* state, short x, shor
     initQRCode();
     display->drawString(x, y + 10, "SSID: " + SW_NAME);
     display->drawString(x, y + 40, "IP:" + getIPAddress());
-    uint8_t dx = 128 - qrcode.size, dy = 64 - qrcode.size;
+    uint8_t dx = 128 - x - qrcode.size, dy = 64 - qrcode.size;
     for (uint8_t y = 0; y < qrcode.size; y++) {
       for (uint8_t x = 0; x < qrcode.size; x++) {
         if (qrcode_getModule(&qrcode, x, y)) display->setPixel(dx + x, dy + y);
