@@ -1,3 +1,4 @@
+// Active symbol for UI
 const uint8_t activeSymbol[] PROGMEM = {
     B00000000,
     B00000000,
@@ -9,6 +10,7 @@ const uint8_t activeSymbol[] PROGMEM = {
     B00011000
 };
 
+// Inactive symbol for UI
 const uint8_t inactiveSymbol[] PROGMEM = {
     B00000000,
     B00000000,
@@ -20,6 +22,7 @@ const uint8_t inactiveSymbol[] PROGMEM = {
     B00000000
 };
 
+// Sattelite symbol
 const uint8_t satelite[] PROGMEM = {
   B00000000,
   B11100000,
@@ -31,6 +34,7 @@ const uint8_t satelite[] PROGMEM = {
   B00001110
 };
 
+// Location Symbol
 uint8_t locW = 7, locH = 8;
 const uint8_t loc[] PROGMEM = {
   B0011100,
@@ -43,6 +47,9 @@ const uint8_t loc[] PROGMEM = {
   B0001000
 };
 
+/////////////////////
+// Container Sizes //
+/////////////////////
 const uint8_t size_micro[] PROGMEM = {
   B0000000,
   B0000000,
@@ -97,5 +104,5 @@ const uint8_t size_other[] PROGMEM = {
   B1001001,
   B1111111
 };
-
+// Container Sizes
 const uint8_t *sizes[] = {size_micro, size_small, size_regular, size_large, size_other};

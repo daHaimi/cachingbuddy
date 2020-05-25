@@ -1,7 +1,9 @@
-
+/**
+ * Initialize the compass
+ * "Do a barrel roll"
+ */
 void initCompass() {
   compass.begin();
-  compass.setBrightness(50);
   for (uint8_t i = 0; i < LED_COUNT; i++) {
     compass.setPixelColor(activeLed, compass.Color(0, 0, 0));
     activeLed = i;
@@ -11,14 +13,16 @@ void initCompass() {
   }
 }
 
+/**
+ * Calculate color of the active LED
+ * * If further away than MAX_DISTANCE, the color is COLOR_FAR_AWAY
+ * * Else lerp between the predefined steps
+ */
 uint32_t getColor(float distancePercentage) {
-  float steps[] = {0.0, .5, 1.0};
-  uint32_t stepColors[] = {0xff0000, 0xffff00, 0x00ff00};
   if (distancePercentage >= 1.0) {
-    return 0x0000ff;
+    return COLOR_FAR_AWAY;
   }
   if (distancePercentage == 0.0) {
-    // Extrawurst
     return stepColors[0];
   }
   uint8_t i, l, r, g, b;
@@ -37,12 +41,15 @@ uint32_t getColor(float distancePercentage) {
   g = lower >> 8;
   b = lower;
   uint32_t color = compass.Color(
-    ((uint8_t)(lower >> 16)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 16)) * rangePercent,
-    ((uint8_t)(lower >> 8)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 8)) * rangePercent,
-    ((uint8_t)lower) * (1.0 - rangePercent) + ((uint8_t)upper) * rangePercent);
+    ((uint8_t)(lower >> 16)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 16)) * rangePercent * LED_BRIGHTNESS,
+    ((uint8_t)(lower >> 8)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 8)) * rangePercent * LED_BRIGHTNESS,
+    ((uint8_t)lower) * (1.0 - rangePercent) + ((uint8_t)upper) * rangePercent * LED_BRIGHTNESS);
   return color;
 }
 
+/**
+ * Update the compass: Choose new LED according to the course and color to the distance
+ */
 void updateCompass(double course, double distancePercentage, bool valid) {
   compass.setPixelColor(activeLed, compass.Color(0, 0, 0));
   activeLed = floor(course / DEGREE_PER_LED);
@@ -54,6 +61,9 @@ void updateCompass(double course, double distancePercentage, bool valid) {
   }
 }
 
+/**
+ * Called from the main loop: Update the compass to the current values
+ */
 void loopCompass() {
   double distPercentage = (double)current_search.distance / MAX_DISTANCE;
   updateCompass(current_search.course, distPercentage, gps.location.isValid());
