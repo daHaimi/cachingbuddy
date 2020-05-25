@@ -18,6 +18,13 @@ The implementation allows even to use Mystery-Caches (As their coordinates are u
 
 _Multi-Caches_ have multiple waypoints. **CachingBuddy** has been implemented to support up to **32** waypoints per cache.
 
+The Geocaches are available in a list that can be iterated. **CachingBuddy** loads by default from the cache to display:
+
+* Geocode
+* Name of Cache and all additional waypoints
+* Locations of the cache and additional waypoints (not displayed directly)
+* Container Size and D/T ratings
+
 ## Components
 
 ### Hardware
