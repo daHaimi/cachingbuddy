@@ -96,7 +96,7 @@ void indexAction() {
   }
   list += "</ul>";
   sprintf(buf, TPL_FORM, TEXT_CHOOSE_GPX, TEXT_UPLOAD); 
-  server.send(200, "text/html", TPL_HTML_START + list + TPL_SEP + String(buf) + TPL_HTML_END);
+  server.send(200, "text/html", list + TPL_SEP + String(buf) + TPL_HTML_END);
 }
 
 File fsUploadFile;

@@ -4,8 +4,9 @@
 #define NULL '\0'
 
 // QRCode and data pointer
-QRCode qrcode;
+QRCode qrcode, qrWifi;
 uint8_t *qrcodeData = NULL;
+uint8_t *qrcodeWifiData = NULL;
 
 /**
  * Draw startup screen
@@ -112,8 +113,16 @@ void drawSettings(OLEDDisplay *display, OLEDDisplayUiState* state, short x, shor
   } else {
     initQRCode();
     display->drawString(x, y + 10, String(TEXT_SSID) + " " + SW_NAME);
-    display->drawString(x, y + 40, "IP:" + getIPAddress());
-    uint8_t dx = 128 - x - qrcode.size, dy = 64 - qrcode.size;
+    uint8_t dx = 128 - x - qrWifi.size, dy = 0;
+    for (uint8_t y = 0; y < qrWifi.size; y++) {
+      for (uint8_t x = 0; x < qrWifi.size; x++) {
+        if (qrcode_getModule(&qrWifi, x, y)) display->setPixel(dx + x, dy + y);
+      }
+    }
+    
+    display->setTextAlignment(TEXT_ALIGN_RIGHT);
+    display->drawString(128 - x, y + 40, "IP:" + getIPAddress());
+    dx = x, dy = 64 - qrcode.size;
     for (uint8_t y = 0; y < qrcode.size; y++) {
       for (uint8_t x = 0; x < qrcode.size; x++) {
         if (qrcode_getModule(&qrcode, x, y)) display->setPixel(dx + x, dy + y);
@@ -127,9 +136,12 @@ void drawSettings(OLEDDisplay *display, OLEDDisplayUiState* state, short x, shor
  */
 void initQRCode() {
   if (qrcodeData == NULL) {
-    qrcodeData = (uint8_t*)malloc(sizeof(uint8_t) * qrcode_getBufferSize(1));
+    qrcodeData = (uint8_t*)malloc(sizeof(uint8_t) * qrcode_getBufferSize(2));
     String url = "http://" + getIPAddress();
-    qrcode_initText(&qrcode, qrcodeData, 1, 0, url.c_str());
+    qrcode_initText(&qrcode, qrcodeData, 2, 1, url.c_str());
+    qrcodeWifiData = (uint8_t*)malloc(sizeof(uint8_t) * qrcode_getBufferSize(2));
+    String wifi = String("WIFI:S:") + SW_NAME + ";;";
+    qrcode_initText(&qrWifi, qrcodeWifiData, 2, 1, wifi.c_str());
   }
 }
 
@@ -138,7 +150,8 @@ void initQRCode() {
  */
 void resetQRCode() {
   free(qrcodeData);
-  qrcodeData = NULL;
+  free(qrcodeWifiData);
+  qrcodeData = qrcodeWifiData = NULL;
 }
 
 /**
@@ -154,7 +167,7 @@ FrameCallback frames[FRAME_COUNT] = {
  * Initialize the Display with initial settings
  */
 void initLCD() {
-  ui.setTargetFPS(15);
+  ui.setTargetFPS(1);
   ui.setActiveSymbol(activeSymbol);
   ui.setInactiveSymbol(inactiveSymbol);
   ui.setIndicatorPosition(BOTTOM);

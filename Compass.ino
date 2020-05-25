@@ -20,10 +20,10 @@ void initCompass() {
  */
 uint32_t getColor(float distancePercentage) {
   if (distancePercentage >= 1.0) {
-    return COLOR_FAR_AWAY;
+    return setBrightness(COLOR_FAR_AWAY);
   }
   if (distancePercentage == 0.0) {
-    return stepColors[0];
+    return setBrightness(stepColors[0]);
   }
   uint8_t i, l, r, g, b;
   float range, rangePercent;
@@ -41,10 +41,18 @@ uint32_t getColor(float distancePercentage) {
   g = lower >> 8;
   b = lower;
   uint32_t color = compass.Color(
-    ((uint8_t)(lower >> 16)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 16)) * rangePercent * LED_BRIGHTNESS,
-    ((uint8_t)(lower >> 8)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 8)) * rangePercent * LED_BRIGHTNESS,
-    ((uint8_t)lower) * (1.0 - rangePercent) + ((uint8_t)upper) * rangePercent * LED_BRIGHTNESS);
-  return color;
+    ((uint8_t)(lower >> 16)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 16)) * rangePercent,
+    ((uint8_t)(lower >> 8)) * (1.0 - rangePercent) + ((uint8_t)(upper >> 8)) * rangePercent,
+    ((uint8_t)lower) * (1.0 - rangePercent) + ((uint8_t)upper) * rangePercent);
+  return setBrightness(color);
+}
+
+uint32_t setBrightness(uint32_t color) {
+  return compass.Color(
+    ((uint8_t)(color >> 16)) * LED_BRIGHTNESS,
+    ((uint8_t)(color >> 8)) * LED_BRIGHTNESS,
+    ((uint8_t)(color)) * LED_BRIGHTNESS
+  );
 }
 
 /**

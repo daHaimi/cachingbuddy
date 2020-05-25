@@ -42,7 +42,7 @@
 #define GPIO_GPS_RX 12
 #define GPIO_GPS_TX 13
 #define GPS_BAUD 9600
-#define GPS_DELAY 1000
+#define GPS_DELAY 500
 // LED-Ring connected to GPIO 0 
 #define GPIO_LED 0
 // LED-Ring size: CJMCV-2812-24
@@ -165,7 +165,7 @@ void setup() {
   initCompass();
   initButtons();
   initLCD();
-
+  disableWifi();
   listCaches();
   loadGpxFile(0);
 
