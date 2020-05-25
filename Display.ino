@@ -91,7 +91,7 @@ void drawCacheList(OLEDDisplay *display, OLEDDisplayUiState* state, short x, sho
   for (uint8_t i = startIdx; i < min(numCaches, (uint8_t)(startIdx + PER_PAGE)); i++) {
     short cy =  ((i - startIdx) * 10);
     if (i == cache.index) {
-      display->drawString(x + 0, ly + cy, "■");
+      display->drawString(x + 0, ly + cy, "#");
     }
     display->drawString(x + 10, ly + cy, avlbCaches[i]);
   }

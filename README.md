@@ -3,7 +3,7 @@ ESP8266-based low-tech caching device.
 
 Intended for Geocaching as group activity.
 
-The texts are in german, sorry for that, maybe I will create a translated version aswell.
+The texts are in german only currently, sorry for that, but I extracted all tests to a separate header file.
 
 ## Features
 * Display Cache details on OLED display incl. course/distance to cache
@@ -11,7 +11,12 @@ The texts are in german, sorry for that, maybe I will create a translated versio
 * Cache itearation with support up to 255 caches
 * Management via HTML-Interface. Access via QR-URL possible
 
-> Feature Details to be done
+### Geocaches
+The **CachingBuddy** uses the *SPIFF* capabilites of the ESP8266 to store the geocaches in the default GPX-format, as they can be downloaded from geocaching.com. The maximum supported number of Caches on the device has been set to **128** as more do not seem to make sense for a single tour.
+
+The implementation allows even to use Mystery-Caches (As their coordinates are updated after solving them) and muti-caches:
+
+_Multi-Caches_ have multiple waypoints. **CachingBuddy** has been implemented to support up to **32** waypoints per cache.
 
 ## Components
 

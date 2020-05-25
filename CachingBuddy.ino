@@ -18,7 +18,8 @@
 #include "text_DE.h"
 
 // Debug mode: Write to Serial
-#define SERIAL true
+//#undef SERIAL
+#define SERIAL
 
 /**
  * Frames
@@ -49,7 +50,7 @@
 // Set degrees per LED
 #define DEGREE_PER_LED (360.0 / LED_COUNT)
 // LED Brightness in percent (0.0 - 1.0)
-#define LED_BRIGHTNESS .5
+#define LED_BRIGHTNESS .25
 // Distance under that the color gradient is used
 #define MAX_DISTANCE 50.0
 // XML read buffer
@@ -92,9 +93,9 @@ typedef struct wpt_t {
 // Index of current waypoint
 // Defined by its geocode, groundspeak-options (size, D/T rating) and its waypoints
 typedef struct geocache_t {
-  uint8_t index;
-  uint8_t numWpts;
-  uint8_t wptIndex;
+  uint8_t index = 0;
+  uint8_t numWpts = 0;
+  uint8_t wptIndex = 0;
   String geocode;
   container_t size;
   float difficulty;
@@ -276,6 +277,8 @@ struct search_t getSearch() {
  */
 void loop() {
   uint64_t mil = millis();
+  while (ss.available() > 0)
+    gps.encode(ss.read());
   if (! isBooting) {
     loopDisplay();
     loopServer();
@@ -283,8 +286,6 @@ void loop() {
     if (mil >= nextUpdate) {
       loopCompass();
       current_search = getSearch();
-      while (ss.available())
-        gps.encode(ss.read());
 #ifdef SERIAL
       if (mil > 5000 && gps.charsProcessed() < 10)
         Serial.println(F(ERROR_NO_GPS));
